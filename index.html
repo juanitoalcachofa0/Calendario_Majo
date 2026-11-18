@@ -88,6 +88,14 @@ figure{margin:0}img,video{max-width:100%;border-radius:6px}audio{width:100%}figc
 #music-player{position:fixed;right:12px;bottom:58px;z-index:6;width:min(352px,calc(100vw - 24px));background:#1b0a10;border:1px solid var(--oro);border-radius:12px;padding:8px;overflow:hidden}
 #music-player[hidden]{display:none}
 #music-player audio{width:100%;display:block}
+#music-welcome{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:22px;background:#12070bdc;backdrop-filter:blur(5px)}
+#music-welcome[hidden]{display:none!important}
+.music-card{width:min(100%,420px);padding:30px 24px;text-align:center;background:linear-gradient(145deg,#5e1426,#241019);border:1px solid var(--oro);border-radius:16px;box-shadow:0 18px 60px #0009}
+.music-card h2{font-size:2.8rem;color:var(--oro);margin:0 0 8px}
+.music-card p{color:var(--ivo);margin:0 0 20px}
+.music-card .btn{margin:5px}
+.music-card .btn.suave{color:var(--oro)}
+#music-error{min-height:1.4em;color:#f2c5c5;font-size:.95rem;margin-top:8px}
 /* Las animaciones decorativas de la portada se mantienen activas. */
 </style>
 </head>
@@ -95,7 +103,16 @@ figure{margin:0}img,video{max-width:100%;border-radius:6px}audio{width:100%}figc
 <canvas id="nieve" aria-hidden="true"></canvas>
 <main id="app"></main>
 <button id="mus" type="button" aria-controls="music-player" aria-expanded="false">♫ Mostrar música</button>
-<div id="music-player" aria-label="Reproductor de música" hidden><audio id="audio-fondo" controls preload="metadata"><source src="Quan somrius amb lletra - malkei66.mp3" type="audio/mpeg">El navegador no puede reproducir este audio.</audio></div>
+<div id="music-player" aria-label="Reproductor de música" hidden><audio id="audio-fondo" controls preload="metadata" loop><source src="Quan somrius amb lletra - malkei66.mp3" type="audio/mpeg">El navegador no puede reproducir este audio.</audio></div>
+<div id="music-welcome" role="dialog" aria-modal="true" aria-labelledby="music-welcome-title" aria-describedby="music-welcome-text">
+  <div class="music-card">
+    <h2 id="music-welcome-title">Un pequeño detalle…</h2>
+    <p id="music-welcome-text">Activa el sonido para disfrutar de la experiencia completa.</p>
+    <button id="activate-sound" class="btn" type="button">♫ Activar sonido y entrar</button>
+    <button id="enter-silent" class="btn suave" type="button">Entrar sin música</button>
+    <div id="music-error" role="status" aria-live="polite"></div>
+  </div>
+</div>
 
 <!-- ============ CONTENIDO EDITABLE: aquí cambias textos, fotos, audio y vídeo ============ -->
 <script type="application/json" id="contenido">
@@ -256,8 +273,28 @@ app.onclick=e=>{const b=e.target.closest('[data-go],[data-d]');if(!b||b.disabled
 if(b.dataset.d)dia(+b.dataset.d);else b.dataset.go=='cal'?cal():portada()};
 
 const mus=$('#mus'),musicPlayer=$('#music-player'),audioFondo=$('#audio-fondo');
+const musicWelcome=$('#music-welcome'),activateSound=$('#activate-sound'),enterSilent=$('#enter-silent'),musicError=$('#music-error');
 audioFondo.volume=0.22;
-mus.onclick=()=>{const abrir=musicPlayer.hidden;musicPlayer.hidden=!abrir;mus.setAttribute('aria-expanded',String(abrir));mus.textContent=abrir?'♫ Ocultar música':'♫ Mostrar música'};
+async function activarMusica(){
+  audioFondo.volume=0.22;
+  try{
+    await audioFondo.play();
+    musicWelcome.hidden=true;
+    mus.textContent='♫ Ocultar música';
+    mus.setAttribute('aria-expanded','true');
+    musicPlayer.hidden=true;
+  }catch(err){
+    musicError.textContent='No se ha podido iniciar la música. Puedes probar con el botón de música de abajo.';
+  }
+}
+activateSound.onclick=activarMusica;
+enterSilent.onclick=()=>{musicWelcome.hidden=true};
+mus.onclick=()=>{
+  const abrir=musicPlayer.hidden;
+  musicPlayer.hidden=!abrir;
+  mus.setAttribute('aria-expanded',String(abrir));
+  mus.textContent=abrir?'♫ Ocultar música':'♫ Mostrar música';
+};
 
 (()=>{const c=$('#nieve'),g=c.getContext('2d');let w,h,raf;
 const rs=()=>{const d=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;c.width=Math.round(w*d);c.height=Math.round(h*d);c.style.width=w+'px';c.style.height=h+'px';g.setTransform(d,0,0,d,0,0)};rs();addEventListener('resize',rs);
