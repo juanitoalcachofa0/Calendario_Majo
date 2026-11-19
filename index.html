@@ -74,6 +74,18 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--oro);outline-of
 .fila{display:flex;gap:8px;flex-wrap:wrap}
 .fila input{flex:1;min-width:140px;font:inherit;padding:.5em .9em;border:1px solid var(--oro);border-radius:8px;background:#fff9}
 .op{display:block;width:100%;margin:.4em 0;padding:.6em;border:1px solid var(--oro);border-radius:8px;background:#fff8;color:inherit}
+
+.quiz-pregunta{border:0;border-top:1px solid #c9a96a88;padding:1em 0 .5em;margin:0}
+.quiz-pregunta legend{font-weight:700;margin-bottom:.45em}
+.quiz-opcion{display:flex;align-items:center;gap:.55em;margin:.38em 0;padding:.5em .65em;border:1px solid #c9a96a88;border-radius:8px;background:#fff9;cursor:pointer}
+.quiz-opcion input{accent-color:var(--bur2)}
+.quiz-comprobar{display:block;margin:1.1em auto 0;padding:.7em 1.4em;border:1px solid var(--oro);border-radius:99px;background:var(--bur);color:var(--ivo);font:inherit;cursor:pointer}
+.quiz-modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:#16080dcc}
+.quiz-modal[hidden]{display:none}
+.quiz-modal-caja{width:min(92vw,430px);padding:1.6em 1.3em;text-align:center;background:var(--ivo);color:var(--bur);border:2px solid var(--oro);border-radius:16px;box-shadow:0 18px 55px #0008}
+.quiz-modal-caja p{font-size:1.15em;font-weight:700;line-height:1.5}
+.quiz-modal-caja button{padding:.55em 1.3em;border:1px solid var(--oro);border-radius:99px;background:var(--bur);color:var(--ivo);font:inherit;cursor:pointer}
+
 .bien{background:#cfe3d3}.mal{background:#f0c9cc}
 .res{min-height:1.6em;color:var(--bur2);font-style:italic;text-align:center}
 .marco{aspect-ratio:4/3;display:grid;place-items:center;border:2px dashed var(--oro);border-radius:6px;color:#8a6d3b;text-align:center;padding:1em}
@@ -135,17 +147,61 @@ figure{margin:0}.galeria{display:grid;grid-template-columns:1fr;gap:18px;margin:
       "musica": "Fonseca%20-%20Que%20Suerte%20Tenerte%20(Audio)%20-%20FonsecaVEVO.mp3"
     },
     {
-      "tipo": "quiz",
-      "titulo": "¿Cuánto me conoces?",
-      "pregunta": "Pregunta de ejemplo: ¿cuál es mi tradición navideña favorita?",
-      "opciones": [
-        "Opción A",
-        "Opción B",
-        "Opción C"
-      ],
-      "correcta": 1,
-      "acierto": "¡Acertaste, cariño!",
-      "fallo": "Casi… prueba otra vez."
+        "tipo": "quizpersonal",
+        "titulo": "¿Cuánto me conoces?",
+        "preguntas": [
+          {
+            "pregunta": "¿Cuál es mi comida favorita?",
+            "opciones": [
+              "Pizza",
+              "Lasaña",
+              "Hamburguesa",
+              "Sushi"
+            ],
+            "correcta": 1
+          },
+          {
+            "pregunta": "¿Qué postre te he dicho que te voy a hacer y todavía no te he hecho?",
+            "opciones": [
+              "Tarta de queso",
+              "Brownie",
+              "Tiramisú",
+              "Flan"
+            ],
+            "correcta": 2
+          },
+          {
+            "pregunta": "¿Cuál es mi color favorito?",
+            "opciones": [
+              "Azul",
+              "Verde",
+              "Naranja",
+              "Rojo"
+            ],
+            "correcta": 2
+          },
+          {
+            "pregunta": "¿Cuál es el plato ecuatoriano que más me gusta?",
+            "opciones": [
+              "Bandera",
+              "Arroz marinero",
+              "Corviche",
+              "Arroz moro",
+              "Arroz con pollo",
+              "Costillas de la abuela"
+            ],
+            "correcta": 2
+          },
+          {
+            "pregunta": "¿Cuál es mi juego favorito?",
+            "opciones": [
+              "League of Legends",
+              "The Legend of Zelda",
+              "Pokémon"
+            ],
+            "correcta": 2
+          }
+        ]
     },
     {
       "tipo": "acertijo",
@@ -400,6 +456,8 @@ carta:x=>`<div class="carta">${P(x.texto)}</div>`,
 foto:x=>`<figure>${x.imagen?`<img src="${esc(x.imagen)}" alt="${esc(x.pie)}">`:'<div class="marco">Aquí irá vuestra fotografía</div>'}<figcaption>${esc(x.pie)}</figcaption></figure>`,
 fotos:x=>`<p>${esc(x.texto||'')}</p><div class="galeria">${x.imagenes.map(im=>`<figure><img src="${esc(im.src)}" alt="${esc(im.alt||'Fotografía nuestra')}" loading="lazy"><figcaption>${esc(im.pie||'')}</figcaption></figure>`).join('')}</div>`, 
 quiz:x=>`<p>${esc(x.pregunta)}</p>${x.opciones.map((o,i)=>`<button class="op" data-i="${i}">${esc(o)}</button>`).join('')}<p class="res"></p>`,
+quizpersonal:x=>`<form class="quiz-personal">${x.preguntas.map((p,i)=>`<fieldset class="quiz-pregunta"><legend>${i+1}. ${esc(p.pregunta)}</legend>${p.opciones.map((o,j)=>`<label class="quiz-opcion"><input type="radio" name="pregunta-${i}" value="${j}"><span>${esc(o)}</span></label>`).join('')}</fieldset>`).join('')}<button class="quiz-comprobar" type="submit">Comprobar respuestas ❤️</button></form><div class="quiz-modal" hidden role="dialog" aria-modal="true" aria-labelledby="quiz-mensaje"><div class="quiz-modal-caja"><p id="quiz-mensaje"></p><button type="button" data-cerrar-quiz>¡Vale! ❤️</button></div></div>`,
+
 acertijo:x=>`<p>${esc(x.pregunta)}</p><div class="fila"><input aria-label="Tu respuesta"><button class="btn">Probar</button><button class="btn suave" data-h>Pista</button></div><p class="res"></p>`,
 memoria:x=>`<p>Encuentra las parejas.</p><div class="mem">${mez([...x.pares,...x.pares]).map(k=>`<button class="m" data-k="${esc(k)}" aria-label="Carta">${esc(k)}</button>`).join('')}</div><p class="res"></p>`,
 puzzle:()=>`<p>Toca las piezas en el orden correcto para formar la frase.</p><div class="orden"></div><div class="bandeja"></div><p class="res"></p>`,
@@ -408,6 +466,26 @@ video:x=>`<p>${esc(x.texto)}</p>${med(x,'video')}`,
 reto:x=>`<p>${esc(x.texto)}</p><p style="text-align:center"><button class="btn">Reto cumplido ✓</button></p><p class="res"></p>`};
 const B={
 quiz:(r,x)=>r.querySelectorAll('.op').forEach(b=>b.onclick=()=>{const ok=+b.dataset.i===x.correcta;b.className='op '+(ok?'bien':'mal');r.querySelector('.res').textContent=ok?x.acierto:x.fallo}),
+quizpersonal:(r,x)=>{
+const form=r.querySelector('.quiz-personal'),modal=r.querySelector('.quiz-modal'),mensaje=r.querySelector('#quiz-mensaje');
+form.addEventListener('submit',e=>{
+e.preventDefault();
+const respuestas=x.preguntas.map((p,i)=>form.querySelector('input[name="pregunta-'+i+'"]:checked'));
+if(respuestas.some(v=>!v)){mensaje.textContent='¡Contesta todas las preguntitas antes de descubrir tu resultado! 🥰';modal.hidden=false;return}
+const aciertos=respuestas.reduce((n,v,i)=>n+(Number(v.value)===x.preguntas[i].correcta?1:0),0);
+let texto;
+if(aciertos===0)texto='Cariño creo que tenemos que hablar 🤣🤣🤣';
+else if(aciertos===3)texto='Veo que me conoces, pero aun te queda Uri por conocer😝🥰🤭';
+else if(aciertos===x.preguntas.length)texto='Amoooor tu si que me conoces❤️❤️❤️';
+else if(aciertos===4)texto='¡Casi perfecto! Ese Uri se te escapa por poquito 😝❤️';
+else texto='¡Hay que seguir descubriendo cositas de Uri! 😘';
+mensaje.textContent=texto;
+modal.hidden=false;
+});
+r.querySelector('[data-cerrar-quiz]').addEventListener('click',()=>{modal.hidden=true});
+modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true});
+},
+
 acertijo:(r,x)=>{const res=r.querySelector('.res');r.querySelector('.btn').onclick=()=>res.textContent=norm(r.querySelector('input').value)===norm(x.respuesta)?'¡Exacto! ✨':'Casi… inténtalo otra vez.';r.querySelector('[data-h]').onclick=()=>res.textContent='Pista: '+x.pista},
 reto:r=>r.querySelector('.btn').onclick=()=>r.querySelector('.res').textContent='Qué bonito, uno más para la colección 💕',
 memoria:(r,x)=>{let a=null,lock=false,n=0;const res=r.querySelector('.res');
