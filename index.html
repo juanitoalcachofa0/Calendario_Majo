@@ -55,7 +55,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--oro);outline-of
 @media(min-width:700px){.rejilla{grid-template-columns:repeat(4,1fr);gap:24px}}
 .puerta{--c1:#7d1f36;--c2:#4a0f1e;aspect-ratio:3/4;position:relative;border:0;padding:0;background:radial-gradient(circle at 50% 62%,#f7dc9a,#b9772f);border-radius:50% 50% 5px 5px/28% 28% 5px 5px;box-shadow:0 0 0 2px var(--oro),0 10px 22px #0007;perspective:700px;transition:transform .3s}
 .puerta:not(:disabled):hover{transform:translateY(-3px)}
-.c1{--c1:#2b5240;--c2:#173026}.c2{--c1:#c98f93;--c2:#a96a73}.c3{--c1:#5e1426;--c2:#2f0a13}
+/* Las 24 puertas comparten la gama burdeos, granate y rojo; cambia solo la intensidad. */
+.c1{--c1:#8f263d;--c2:#5e1426}.c2{--c1:#6f172d;--c2:#350b17}.c3{--c1:#a12b43;--c2:#641329}
 .hoja{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(160deg,var(--c1),var(--c2));display:grid;place-items:center;transform-origin:left center;transition:transform .9s cubic-bezier(.3,.7,.2,1)}
 .hoja::before{content:'';position:absolute;inset:10% 12% 8%;border:1px solid #c9a96a99;border-radius:50% 50% 3px 3px/24% 24% 3px 3px}
 .hoja::after{content:'';position:absolute;right:10%;top:56%;width:6px;height:6px;border-radius:50%;background:var(--oro)}
@@ -76,7 +77,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--oro);outline-of
 .bien{background:#cfe3d3}.mal{background:#f0c9cc}
 .res{min-height:1.6em;color:var(--bur2);font-style:italic;text-align:center}
 .marco{aspect-ratio:4/3;display:grid;place-items:center;border:2px dashed var(--oro);border-radius:6px;color:#8a6d3b;text-align:center;padding:1em}
-figure{margin:0}img,video{max-width:100%;border-radius:6px}audio{width:100%}figcaption{text-align:center;font-style:italic;margin-top:.5em}
+figure{margin:0}.galeria{display:grid;grid-template-columns:1fr;gap:18px;margin:1.2em 0}.galeria figure{margin:0}.galeria img{width:100%;height:auto;max-height:560px;object-fit:contain;border:1px solid #c9a96a88;box-shadow:0 8px 24px #0005}.galeria figcaption{color:var(--oro);font-size:1rem}img,video{max-width:100%;border-radius:6px}audio{width:100%}figcaption{text-align:center;font-style:italic;margin-top:.5em}
 .mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .m{aspect-ratio:1;border:1px solid var(--oro);border-radius:8px;background:var(--bur);color:var(--oro);font-size:0}
 .m::before{content:'✦';font-size:1.4rem}.m.v{background:#fff;font-size:1.9rem}.m.v::before{content:none}
@@ -88,14 +89,6 @@ figure{margin:0}img,video{max-width:100%;border-radius:6px}audio{width:100%}figc
 #music-player{position:fixed;right:12px;bottom:58px;z-index:6;width:min(352px,calc(100vw - 24px));background:#1b0a10;border:1px solid var(--oro);border-radius:12px;padding:8px;overflow:hidden}
 #music-player[hidden]{display:none}
 #music-player audio{width:100%;display:block}
-#music-welcome{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:22px;background:#12070bdc;backdrop-filter:blur(5px)}
-#music-welcome[hidden]{display:none!important}
-.music-card{width:min(100%,420px);padding:30px 24px;text-align:center;background:linear-gradient(145deg,#5e1426,#241019);border:1px solid var(--oro);border-radius:16px;box-shadow:0 18px 60px #0009}
-.music-card h2{font-size:2.8rem;color:var(--oro);margin:0 0 8px}
-.music-card p{color:var(--ivo);margin:0 0 20px}
-.music-card .btn{margin:5px}
-.music-card .btn.suave{color:var(--oro)}
-#music-error{min-height:1.4em;color:#f2c5c5;font-size:.95rem;margin-top:8px}
 /* Las animaciones decorativas de la portada se mantienen activas. */
 </style>
 </head>
@@ -103,65 +96,240 @@ figure{margin:0}img,video{max-width:100%;border-radius:6px}audio{width:100%}figc
 <canvas id="nieve" aria-hidden="true"></canvas>
 <main id="app"></main>
 <button id="mus" type="button" aria-controls="music-player" aria-expanded="false">♫ Mostrar música</button>
-<div id="music-player" aria-label="Reproductor de música" hidden><audio id="audio-fondo" controls preload="metadata" loop><source src="Quan somrius amb lletra - malkei66.mp3" type="audio/mpeg">El navegador no puede reproducir este audio.</audio></div>
-<div id="music-welcome" role="dialog" aria-modal="true" aria-labelledby="music-welcome-title" aria-describedby="music-welcome-text">
-  <div class="music-card">
-    <h2 id="music-welcome-title">Un pequeño detalle…</h2>
-    <p id="music-welcome-text">Activa el sonido para disfrutar de la experiencia completa.</p>
-    <button id="activate-sound" class="btn" type="button">♫ Activar sonido y entrar</button>
-    <button id="enter-silent" class="btn suave" type="button">Entrar sin música</button>
-    <div id="music-error" role="status" aria-live="polite"></div>
-  </div>
-</div>
+<div id="music-player" aria-label="Reproductor de música" hidden><audio id="audio-fondo" controls preload="metadata"><source src="Quan somrius amb lletra - malkei66.mp3" type="audio/mpeg">El navegador no puede reproducir este audio.</audio></div>
 
 <!-- ============ CONTENIDO EDITABLE: aquí cambias textos, fotos, audio y vídeo ============ -->
 <script type="application/json" id="contenido">
 {
-"anio":2026,
-"modoPrueba":true,
-"demo":true,
-"titulo":"24 días para ti",
-"subtitulo":"Una pequeña sorpresa cada día, preparada con mucho cariño",
-"dedicatoria":"Para Majito, mi hermosa princesa",
-"firma":"Con todo mi amor",
-"portadaImagen":"",
-"musica":"",
-"dias":[
-{"tipo":"carta","titulo":"Primera puerta","texto":"Amor, hoy se abre la primera puerta del camino hasta Navidad.\nTexto de ejemplo: sustitúyelo por tu carta."},
-{"tipo":"foto","titulo":"Un recuerdo","imagen":"","pie":"Pie de foto de ejemplo"},
-{"tipo":"quiz","titulo":"¿Cuánto me conoces?","pregunta":"Pregunta de ejemplo: ¿cuál es mi tradición navideña favorita?","opciones":["Opción A","Opción B","Opción C"],"correcta":1,"acierto":"¡Acertaste, cariño!","fallo":"Casi… prueba otra vez."},
-{"tipo":"acertijo","titulo":"Un acertijo","pregunta":"Cae del cielo en invierno, es blanca, suave y no cabe en un bolsillo. ¿Qué es?","respuesta":"nieve","pista":"Cae en la portada de esta web."},
-{"tipo":"reto","titulo":"Reto del día","texto":"Reto de ejemplo: preparad un chocolate caliente y brindad juntos."},
-{"tipo":"memoria","titulo":"Memoria de invierno","pares":["❄️","⭐","🎁","🕯️","🎄","💌"]},
-{"tipo":"puzzle","titulo":"Frase desordenada","piezas":["Contigo","todo","es","más","bonito"]},
-{"tipo":"audio","titulo":"Para escuchar","archivo":"","texto":"Aquí irá un mensaje de voz o una canción."},
-{"tipo":"carta","titulo":"Una carta","texto":"Mi princesa, esta es otra carta de ejemplo.\nEscribe aquí lo que quieras contarle hoy."},
-{"tipo":"video","titulo":"Para ver","archivo":"","texto":"Aquí irá un vídeo."},
-{"tipo":"foto","titulo":"Otro recuerdo","imagen":"","pie":"Pie de foto de ejemplo"},
-{"tipo":"quiz","titulo":"Verdadero o falso","pregunta":"Pregunta de ejemplo para el día 12.","opciones":["Verdadero","Falso"],"correcta":0,"acierto":"¡Exacto!","fallo":"Mmm, no era esa."},
-{"tipo":"acertijo","titulo":"Otro acertijo","pregunta":"Acertijo de ejemplo: ¿qué se enciende en Adviento, domingo a domingo?","respuesta":"vela","pista":"Da luz y se derrite."},
-{"tipo":"reto","titulo":"Reto del día","texto":"Reto de ejemplo: enviaos un mensaje con lo mejor del día."},
-{"tipo":"memoria","titulo":"Memoria navideña","pares":["🦌","🔔","🧦","🍪","⛄","🌟"]},
-{"tipo":"puzzle","titulo":"Otra frase","piezas":["Eres","mi","mejor","regalo"]},
-{"tipo":"carta","titulo":"Una carta más","texto":"Cariño, carta de ejemplo para el día 17.\nSustituye este texto por el tuyo."},
-{"tipo":"foto","titulo":"Un momento","imagen":"","pie":"Pie de foto de ejemplo"},
-{"tipo":"quiz","titulo":"Pregunta del día","pregunta":"Pregunta de ejemplo para el día 19.","opciones":["Uno","Dos","Tres","Cuatro"],"correcta":2,"acierto":"¡Muy bien!","fallo":"Casi."},
-{"tipo":"acertijo","titulo":"Casi Navidad","pregunta":"Acertijo de ejemplo: ¿qué se cuelga del árbol y brilla?","respuesta":"bola","pista":"Es redonda."},
-{"tipo":"reto","titulo":"Reto del día","texto":"Reto de ejemplo: escribid una lista de deseos para el año nuevo."},
-{"tipo":"audio","titulo":"Otra pista de audio","archivo":"","texto":"Aquí irá otro audio."},
-{"tipo":"video","titulo":"Otro vídeo","archivo":"","texto":"Aquí irá otro vídeo."}
-],
-"final":{
-"pruebas":[
-{"titulo":"La luz","pregunta":"Prueba de ejemplo: ¿qué brilla en lo alto del árbol?","respuesta":"estrella","fragmento":"ES","pista":"Es dorada y tiene puntas."},
-{"titulo":"El verde","pregunta":"Prueba de ejemplo: ¿qué planta se cuelga para besarse debajo?","respuesta":"muérdago","fragmento":"TRE","pista":"Tiene bolitas blancas."},
-{"titulo":"El brindis","pregunta":"Prueba de ejemplo: ¿cómo se llama la noche del 24 de diciembre?","respuesta":"nochebuena","fragmento":"LLA","pista":"Empieza por «noche»."}
-],
-"clave":"estrella",
-"carta":"Carta final de ejemplo.\nAquí irá la carta que le revelarás al terminar las tres pruebas.",
-"imagen":"",
-"sorpresa":"Aquí irá la sorpresa final."
-}
+  "anio": 2026,
+  "modoPrueba": true,
+  "demo": true,
+  "titulo": "24 días para ti",
+  "subtitulo": "Una pequeña sorpresa cada día, preparada con mucho cariño",
+  "dedicatoria": "Para Majito, mi hermosa princesa",
+  "firma": "Con todo mi amor",
+  "portadaImagen": "",
+  "musica": "",
+  "dias": [
+    {
+      "tipo": "carta",
+      "titulo": "Nuestra primera Navidad separados",
+      "texto": "Buenas, amor:\n\nEsta es nuestra primera Navidad juntos y, como estamos separados por un gran mar, quería hacerte algo especial.\n\nEstuve pensando y hay algo que siempre he tenido ganas de volver a hacer desde que era niño: ¡un calendario de Adviento! Y aquí está el tuyo.\n\nQuiero demostrarte mi amor cada día y, como por ahora solo puedo hacerlo a través de videollamadas, quería que también tuvieras algo que pudieras ver y disfrutar cada día durante este invierno. Algo que te recordase que, aunque estemos lejos, estoy contigo.\n\nCon esto también quiero que veas que lo eres todo para mí. Que quiero una larga vida a tu lado, que quiero formar una familia contigo y que quiero que Dios nos cuide, nos acompañe y nos enseñe a construirla juntos.\n\nTe amo con todo mi amor. Te amo en los días buenos, te amo en los días malos, te amo cuando estamos cansados, te amo cuando estamos enojados y te amo cuando nos acostamos. Amo estar a tu lado y quiero que, durante estos días en los que estamos separados, puedas tener también un pedacito de mí.\n\nCon este calendario podrás jugar, resolver enigmas, leer cartas y revivir recuerdos de los dos. Espero que te lo pases muy bien, amor, y que disfrutes muchísimo de este regalo.\n\n¡Te amo! ❤️"
+    },
+    {
+      "tipo": "fotos",
+      "titulo": "Qué suerte tenerte",
+      "texto": "Dos recuerdos nuestros que me encanta guardar. ❤️",
+      "imagenes": [
+        {
+          "src": "WhatsApp%20Image%202026-11-19%20at%2016.33.40.jpeg",
+          "alt": "Una foto nuestra sonriendo en nuestra segunda cita",
+          "pie": "Nuestra segunda cita"
+        },
+        {
+          "src": "WhatsApp%20Image%202026-11-19%20at%2016.33.38.jpeg",
+          "alt": "Una foto nuestra junto al mar",
+          "pie": "Un día juntos junto al mar"
+        }
+      ],
+      "musica": "Fonseca%20-%20Que%20Suerte%20Tenerte%20(Audio)%20-%20FonsecaVEVO.mp3"
+    },
+    {
+      "tipo": "quiz",
+      "titulo": "¿Cuánto me conoces?",
+      "pregunta": "Pregunta de ejemplo: ¿cuál es mi tradición navideña favorita?",
+      "opciones": [
+        "Opción A",
+        "Opción B",
+        "Opción C"
+      ],
+      "correcta": 1,
+      "acierto": "¡Acertaste, cariño!",
+      "fallo": "Casi… prueba otra vez."
+    },
+    {
+      "tipo": "acertijo",
+      "titulo": "Un acertijo",
+      "pregunta": "Cae del cielo en invierno, es blanca, suave y no cabe en un bolsillo. ¿Qué es?",
+      "respuesta": "nieve",
+      "pista": "Cae en la portada de esta web."
+    },
+    {
+      "tipo": "reto",
+      "titulo": "Reto del día",
+      "texto": "Reto de ejemplo: preparad un chocolate caliente y brindad juntos."
+    },
+    {
+      "tipo": "memoria",
+      "titulo": "Memoria de invierno",
+      "pares": [
+        "❄️",
+        "⭐",
+        "🎁",
+        "🕯️",
+        "🎄",
+        "💌"
+      ]
+    },
+    {
+      "tipo": "puzzle",
+      "titulo": "Frase desordenada",
+      "piezas": [
+        "Contigo",
+        "todo",
+        "es",
+        "más",
+        "bonito"
+      ]
+    },
+    {
+      "tipo": "audio",
+      "titulo": "Para escuchar",
+      "archivo": "",
+      "texto": "Aquí irá un mensaje de voz o una canción."
+    },
+    {
+      "tipo": "carta",
+      "titulo": "Una carta",
+      "texto": "Mi princesa, esta es otra carta de ejemplo.\nEscribe aquí lo que quieras contarle hoy."
+    },
+    {
+      "tipo": "video",
+      "titulo": "Para ver",
+      "archivo": "",
+      "texto": "Aquí irá un vídeo."
+    },
+    {
+      "tipo": "foto",
+      "titulo": "Otro recuerdo",
+      "imagen": "",
+      "pie": "Pie de foto de ejemplo"
+    },
+    {
+      "tipo": "quiz",
+      "titulo": "Verdadero o falso",
+      "pregunta": "Pregunta de ejemplo para el día 12.",
+      "opciones": [
+        "Verdadero",
+        "Falso"
+      ],
+      "correcta": 0,
+      "acierto": "¡Exacto!",
+      "fallo": "Mmm, no era esa."
+    },
+    {
+      "tipo": "acertijo",
+      "titulo": "Otro acertijo",
+      "pregunta": "Acertijo de ejemplo: ¿qué se enciende en Adviento, domingo a domingo?",
+      "respuesta": "vela",
+      "pista": "Da luz y se derrite."
+    },
+    {
+      "tipo": "reto",
+      "titulo": "Reto del día",
+      "texto": "Reto de ejemplo: enviaos un mensaje con lo mejor del día."
+    },
+    {
+      "tipo": "memoria",
+      "titulo": "Memoria navideña",
+      "pares": [
+        "🦌",
+        "🔔",
+        "🧦",
+        "🍪",
+        "⛄",
+        "🌟"
+      ]
+    },
+    {
+      "tipo": "puzzle",
+      "titulo": "Otra frase",
+      "piezas": [
+        "Eres",
+        "mi",
+        "mejor",
+        "regalo"
+      ]
+    },
+    {
+      "tipo": "carta",
+      "titulo": "Una carta más",
+      "texto": "Cariño, carta de ejemplo para el día 17.\nSustituye este texto por el tuyo."
+    },
+    {
+      "tipo": "foto",
+      "titulo": "Un momento",
+      "imagen": "",
+      "pie": "Pie de foto de ejemplo"
+    },
+    {
+      "tipo": "quiz",
+      "titulo": "Pregunta del día",
+      "pregunta": "Pregunta de ejemplo para el día 19.",
+      "opciones": [
+        "Uno",
+        "Dos",
+        "Tres",
+        "Cuatro"
+      ],
+      "correcta": 2,
+      "acierto": "¡Muy bien!",
+      "fallo": "Casi."
+    },
+    {
+      "tipo": "acertijo",
+      "titulo": "Casi Navidad",
+      "pregunta": "Acertijo de ejemplo: ¿qué se cuelga del árbol y brilla?",
+      "respuesta": "bola",
+      "pista": "Es redonda."
+    },
+    {
+      "tipo": "reto",
+      "titulo": "Reto del día",
+      "texto": "Reto de ejemplo: escribid una lista de deseos para el año nuevo."
+    },
+    {
+      "tipo": "audio",
+      "titulo": "Otra pista de audio",
+      "archivo": "",
+      "texto": "Aquí irá otro audio."
+    },
+    {
+      "tipo": "video",
+      "titulo": "Otro vídeo",
+      "archivo": "",
+      "texto": "Aquí irá otro vídeo."
+    }
+  ],
+  "final": {
+    "pruebas": [
+      {
+        "titulo": "La luz",
+        "pregunta": "Prueba de ejemplo: ¿qué brilla en lo alto del árbol?",
+        "respuesta": "estrella",
+        "fragmento": "ES",
+        "pista": "Es dorada y tiene puntas."
+      },
+      {
+        "titulo": "El verde",
+        "pregunta": "Prueba de ejemplo: ¿qué planta se cuelga para besarse debajo?",
+        "respuesta": "muérdago",
+        "fragmento": "TRE",
+        "pista": "Tiene bolitas blancas."
+      },
+      {
+        "titulo": "El brindis",
+        "pregunta": "Prueba de ejemplo: ¿cómo se llama la noche del 24 de diciembre?",
+        "respuesta": "nochebuena",
+        "fragmento": "LLA",
+        "pista": "Empieza por «noche»."
+      }
+    ],
+    "clave": "estrella",
+    "carta": "Carta final de ejemplo.\nAquí irá la carta que le revelarás al terminar las tres pruebas.",
+    "imagen": "",
+    "sorpresa": "Aquí irá la sorpresa final."
+  }
 }
 </script>
 
@@ -230,6 +398,7 @@ const med=(x,t)=>x.archivo?`<${t} controls preload="none" src="${esc(x.archivo)}
 const T={
 carta:x=>`<div class="carta">${P(x.texto)}</div>`,
 foto:x=>`<figure>${x.imagen?`<img src="${esc(x.imagen)}" alt="${esc(x.pie)}">`:'<div class="marco">Aquí irá vuestra fotografía</div>'}<figcaption>${esc(x.pie)}</figcaption></figure>`,
+fotos:x=>`<p>${esc(x.texto||'')}</p><div class="galeria">${x.imagenes.map(im=>`<figure><img src="${esc(im.src)}" alt="${esc(im.alt||'Fotografía nuestra')}" loading="lazy"><figcaption>${esc(im.pie||'')}</figcaption></figure>`).join('')}</div>`, 
 quiz:x=>`<p>${esc(x.pregunta)}</p>${x.opciones.map((o,i)=>`<button class="op" data-i="${i}">${esc(o)}</button>`).join('')}<p class="res"></p>`,
 acertijo:x=>`<p>${esc(x.pregunta)}</p><div class="fila"><input aria-label="Tu respuesta"><button class="btn">Probar</button><button class="btn suave" data-h>Pista</button></div><p class="res"></p>`,
 memoria:x=>`<p>Encuentra las parejas.</p><div class="mem">${mez([...x.pares,...x.pares]).map(k=>`<button class="m" data-k="${esc(k)}" aria-label="Carta">${esc(k)}</button>`).join('')}</div><p class="res"></p>`,
@@ -264,7 +433,23 @@ if(!ok.every(Boolean))return rc.textContent='Primero supera las tres pruebas.';
 if(norm(r.querySelector('#cl').value)!==norm(f.clave))return rc.textContent='Esa no es la contraseña. Junta bien los fragmentos.';
 rc.textContent='¡Se abrió! 🎄';const t=r.querySelector('#tes');t.hidden=false;t.scrollIntoView({behavior:'smooth'})}}
 
+const audioOriginal='Quan%20somrius%20amb%20lletra%20-%20malkei66.mp3';
+function cambiarMusica(archivo){
+  const audio=$('#audio-fondo');
+  const estabaSonando=!audio.paused;
+  const actual=audio.getAttribute('src')||audio.querySelector('source')?.getAttribute('src')||'';
+  if(actual===archivo)return;
+  audio.pause();
+  audio.removeAttribute('src');
+  const fuente=audio.querySelector('source');
+  if(fuente)fuente.remove();
+  audio.src=archivo;
+  audio.load();
+  if(estabaSonando)audio.play().catch(()=>{});
+}
+
 function dia(d){if(!vistos.includes(d)){vistos.push(d);guardar()}
+cambiarMusica(d===2?C.dias[1].musica:audioOriginal);
 const x=C.dias[d-1]||{tipo:'carta',titulo:'Día '+d,texto:''},tp=T[x.tipo]?x.tipo:'carta';
 app.innerHTML=`<section class="vista"><div class="cab"><button class="atras" data-go="cal">‹ Calendario</button><span>${d} de diciembre</span></div><article class="papel">${C.demo?'<span class="prov">Contenido de ejemplo</span>':''}${d==24?final():`<h2>${esc(x.titulo)}</h2>${T[tp](x)}`}</article></section>`;
 const r=app.querySelector('.papel');d==24?iniFinal(r):B[tp]?.(r,x);scrollTo(0,0)}
@@ -273,28 +458,8 @@ app.onclick=e=>{const b=e.target.closest('[data-go],[data-d]');if(!b||b.disabled
 if(b.dataset.d)dia(+b.dataset.d);else b.dataset.go=='cal'?cal():portada()};
 
 const mus=$('#mus'),musicPlayer=$('#music-player'),audioFondo=$('#audio-fondo');
-const musicWelcome=$('#music-welcome'),activateSound=$('#activate-sound'),enterSilent=$('#enter-silent'),musicError=$('#music-error');
 audioFondo.volume=0.22;
-async function activarMusica(){
-  audioFondo.volume=0.22;
-  try{
-    await audioFondo.play();
-    musicWelcome.hidden=true;
-    mus.textContent='♫ Ocultar música';
-    mus.setAttribute('aria-expanded','true');
-    musicPlayer.hidden=true;
-  }catch(err){
-    musicError.textContent='No se ha podido iniciar la música. Puedes probar con el botón de música de abajo.';
-  }
-}
-activateSound.onclick=activarMusica;
-enterSilent.onclick=()=>{musicWelcome.hidden=true};
-mus.onclick=()=>{
-  const abrir=musicPlayer.hidden;
-  musicPlayer.hidden=!abrir;
-  mus.setAttribute('aria-expanded',String(abrir));
-  mus.textContent=abrir?'♫ Ocultar música':'♫ Mostrar música';
-};
+mus.onclick=()=>{const abrir=musicPlayer.hidden;musicPlayer.hidden=!abrir;mus.setAttribute('aria-expanded',String(abrir));mus.textContent=abrir?'♫ Ocultar música':'♫ Mostrar música'};
 
 (()=>{const c=$('#nieve'),g=c.getContext('2d');let w,h,raf;
 const rs=()=>{const d=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;c.width=Math.round(w*d);c.height=Math.round(h*d);c.style.width=w+'px';c.style.height=h+'px';g.setTransform(d,0,0,d,0,0)};rs();addEventListener('resize',rs);
