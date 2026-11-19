@@ -101,6 +101,18 @@ figure{margin:0}.galeria{display:grid;grid-template-columns:1fr;gap:18px;margin:
 #music-player{position:fixed;right:12px;bottom:58px;z-index:6;width:min(352px,calc(100vw - 24px));background:#1b0a10;border:1px solid var(--oro);border-radius:12px;padding:8px;overflow:hidden}
 #music-player[hidden]{display:none}
 #music-player audio{width:100%;display:block}
+
+.music-welcome{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:#10070deE}
+.music-welcome[hidden]{display:none!important}
+.music-welcome-box{width:min(92vw,430px);padding:1.7em 1.35em;text-align:center;background:var(--ivo);color:var(--bur);border:2px solid var(--oro);border-radius:18px;box-shadow:0 18px 60px #0009}
+.music-welcome-box h2{margin:.25em 0 .5em;color:var(--bur2);font-size:1.8rem}
+.music-welcome-box p{line-height:1.5}
+.music-welcome-note{color:#9b793f;font-size:.9em;letter-spacing:.08em}
+.music-welcome-actions{display:grid;gap:10px;margin-top:1.2em}
+.music-welcome-actions button{padding:.7em 1em;border:1px solid var(--oro);border-radius:99px;font:inherit;cursor:pointer}
+#music-yes{background:var(--bur);color:var(--ivo)}
+#music-no{background:transparent;color:var(--bur)}
+
 /* Las animaciones decorativas de la portada se mantienen activas. */
 </style>
 </head>
@@ -108,7 +120,19 @@ figure{margin:0}.galeria{display:grid;grid-template-columns:1fr;gap:18px;margin:
 <canvas id="nieve" aria-hidden="true"></canvas>
 <main id="app"></main>
 <button id="mus" type="button" aria-controls="music-player" aria-expanded="false">♫ Mostrar música</button>
-<div id="music-player" aria-label="Reproductor de música" hidden><audio id="audio-fondo" controls preload="metadata"><source src="Quan somrius amb lletra - malkei66.mp3" type="audio/mpeg">El navegador no puede reproducir este audio.</audio></div>
+<div id="music-player" aria-label="Reproductor de música" hidden><audio id="audio-fondo" controls preload="metadata" loop><source src="Quan somrius amb lletra - malkei66.mp3" type="audio/mpeg">El navegador no puede reproducir este audio.</audio></div>
+<div id="music-welcome" class="music-welcome" role="dialog" aria-modal="true" aria-labelledby="music-welcome-title">
+  <div class="music-welcome-box">
+    <p class="music-welcome-note">✦ Un pequeño detalle ✦</p>
+    <h2 id="music-welcome-title">¿Ponemos un poquito de música?</h2>
+    <p>He preparado una canción para acompañarte mientras descubres tus sorpresas.</p>
+    <div class="music-welcome-actions">
+      <button id="music-yes" type="button">¡Sí, quiero escucharla! ❤️</button>
+      <button id="music-no" type="button">Ahora no</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ============ CONTENIDO EDITABLE: aquí cambias textos, fotos, audio y vídeo ============ -->
 <script type="application/json" id="contenido">
@@ -536,7 +560,16 @@ app.onclick=e=>{const b=e.target.closest('[data-go],[data-d]');if(!b||b.disabled
 if(b.dataset.d)dia(+b.dataset.d);else b.dataset.go=='cal'?cal():portada()};
 
 const mus=$('#mus'),musicPlayer=$('#music-player'),audioFondo=$('#audio-fondo');
+const musicWelcome=$('#music-welcome');
 audioFondo.volume=0.22;
+$('#music-yes').onclick=()=>{
+  musicWelcome.hidden=true;
+  audioFondo.play().catch(()=>{
+    musicPlayer.hidden=false;
+    mus.textContent='♫ Mostrar música';
+  });
+};
+$('#music-no').onclick=()=>{musicWelcome.hidden=true};
 mus.onclick=()=>{const abrir=musicPlayer.hidden;musicPlayer.hidden=!abrir;mus.setAttribute('aria-expanded',String(abrir));mus.textContent=abrir?'♫ Ocultar música':'♫ Mostrar música'};
 
 (()=>{const c=$('#nieve'),g=c.getContext('2d');let w,h,raf;
