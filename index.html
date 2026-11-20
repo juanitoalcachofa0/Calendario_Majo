@@ -86,6 +86,13 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--oro);outline-of
 .quiz-modal-caja p{font-size:1.15em;font-weight:700;line-height:1.5}
 .quiz-modal-caja button{padding:.55em 1.3em;border:1px solid var(--oro);border-radius:99px;background:var(--bur);color:var(--ivo);font:inherit;cursor:pointer}
 
+/* Día 4: estrellas y mensaje secreto */
+.stars-game{position:relative;min-height:430px;margin:1em 0;padding:1.2em .5em;border-radius:16px;background:radial-gradient(ellipse at 50% 45%,#263456 0,#11182b 55%,#080d19 100%);overflow:hidden;border:1px solid #c9a96a77;text-align:center}
+.stars-game::before{content:'';position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1.6px),radial-gradient(#c9a96a 1px,transparent 1.8px);background-size:47px 53px,73px 67px;background-position:7px 11px,24px 32px;opacity:.35;pointer-events:none}
+.stars-intro,.stars-count,.stars-words,.stars-result{position:relative;z-index:1}.stars-intro{max-width:34ch;margin:.3em auto 1em;color:#f6efe0}.stars-count{color:#e8c27a;font-size:.95em;margin:.3em 0 1em}
+.stars-field{position:relative;z-index:1;min-height:260px;max-width:620px;margin:auto}.secret-star{position:absolute;border:0;background:transparent;color:#ffe8a8;font-size:clamp(1.25rem,5vw,2rem);padding:8px;line-height:1;filter:drop-shadow(0 0 5px #f6d78c);animation:star-pulse 2.5s ease-in-out infinite;transition:transform .2s,opacity .3s}.secret-star:hover{transform:scale(1.35)}.secret-star:disabled{cursor:default;animation:none;opacity:.65}.secret-star.found{color:#fff5cc;filter:drop-shadow(0 0 12px #ffe28a);transform:scale(1.3)}
+@keyframes star-pulse{0%,100%{opacity:.65}50%{opacity:1}}.stars-words{min-height:4em;max-width:38ch;margin:1em auto;padding:.75em;border:1px solid #c9a96a66;border-radius:10px;background:#090f1c99;color:#f5d98c;line-height:1.9}.stars-result{display:none;margin:1em auto 0;max-width:38ch;padding:1em;background:#0a1020aa;border:1px solid #d9bd7b;border-radius:12px}.stars-result.show{display:block;animation:ap .8s ease both}.stars-heart{display:block;width:min(100%,330px);margin:0 auto 1em;filter:drop-shadow(0 0 10px #e8c27a88)}.stars-heart path{fill:none;stroke:#e8c27a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;animation:heart-glow 2s ease-in-out infinite alternate}@keyframes heart-glow{from{opacity:.5;filter:drop-shadow(0 0 2px #e8c27a)}to{opacity:1;filter:drop-shadow(0 0 8px #ffe7a3)}}
+
 .bien{background:#cfe3d3}.mal{background:#f0c9cc}
 .res{min-height:1.6em;color:var(--bur2);font-style:italic;text-align:center}
 .marco{aspect-ratio:4/3;display:grid;place-items:center;border:2px dashed var(--oro);border-radius:6px;color:#8a6d3b;text-align:center;padding:1em}
@@ -226,6 +233,11 @@ figure{margin:0}.galeria{display:grid;grid-template-columns:1fr;gap:18px;margin:
             "correcta": 2
           }
         ]
+    },
+    {
+      "tipo": "estrellas",
+      "titulo": "Un mensaje entre las estrellas",
+      "mensaje": "Te quiero mucho, amor, a pesar de estar lejos quiero seguir a tu lado. ❤️"
     },
     {
       "tipo": "acertijo",
@@ -482,6 +494,7 @@ fotos:x=>`<p>${esc(x.texto||'')}</p><div class="galeria">${x.imagenes.map(im=>`<
 quiz:x=>`<p>${esc(x.pregunta)}</p>${x.opciones.map((o,i)=>`<button class="op" data-i="${i}">${esc(o)}</button>`).join('')}<p class="res"></p>`,
 quizpersonal:x=>`<form class="quiz-personal">${x.preguntas.map((p,i)=>`<fieldset class="quiz-pregunta"><legend>${i+1}. ${esc(p.pregunta)}</legend>${p.opciones.map((o,j)=>`<label class="quiz-opcion"><input type="radio" name="pregunta-${i}" value="${j}"><span>${esc(o)}</span></label>`).join('')}</fieldset>`).join('')}<button class="quiz-comprobar" type="submit">Comprobar respuestas ❤️</button></form><div class="quiz-modal" hidden role="dialog" aria-modal="true" aria-labelledby="quiz-mensaje"><div class="quiz-modal-caja"><p id="quiz-mensaje"></p><button type="button" data-cerrar-quiz>¡Vale! ❤️</button></div></div>`,
 
+ estrellas:x=>{const coords=[[9,18],[22,6],[43,15],[67,8],[84,26],[15,60],[34,78],[56,66],[78,82],[90,55],[46,38],[61,24],[29,37],[73,47],[5,82],[94,10]],words=['Te','quiero','mucho','amor,','a','pesar','de','estar','lejos','quiero','seguir','a tu lado. ❤️'];return `<p class="stars-intro">Hoy he escondido algo entre las estrellas. Algunas guardan palabras, otras solo están aquí para despistarte… ¿serás capaz de encontrar el mensaje? ❤️</p><div class="stars-count" aria-live="polite">Palabras encontradas: <b class="stars-found">0</b> de 12</div><div class="stars-game"><div class="stars-field">${coords.map((p,i)=>`<button type="button" class="secret-star" data-star="${i<12?i:'fake'}" style="left:${p[0]}%;top:${p[1]}%" aria-label="Estrella misteriosa">✦</button>`).join('')}</div><div class="stars-words" aria-live="polite">${Array.from({length:12},(_,i)=>`<span class="word-slot" data-slot="${i}">✧</span>`).join(' ')}</div><div class="stars-result"><svg class="stars-heart" viewBox="0 0 320 270" role="img" aria-label="Constelación con forma de corazón"><path d="M160 238 L80 168 L45 100 L82 48 L137 54 L160 103 L190 52 L245 48 L279 100 L244 168 Z M80 168 L137 54 M137 54 L190 52 M190 52 L279 100 M45 100 L160 103 M160 103 L245 168 M245 168 L160 238"/><g fill="#ffe9a8">${[[160,238],[80,168],[45,100],[82,48],[137,54],[160,103],[190,52],[245,48],[279,100],[244,168]].map(([a,b])=>`<circle cx="${a}" cy="${b}" r="3.5"/>`).join('')}</g></svg><p class="stars-final-message">${esc(x.mensaje)}</p><p>Porque, aunque haya un océano entre nosotros, quiero seguir compartiendo mi vida contigo. ❤️</p></div></div>`},
 acertijo:x=>`<p>${esc(x.pregunta)}</p><div class="fila"><input aria-label="Tu respuesta"><button class="btn">Probar</button><button class="btn suave" data-h>Pista</button></div><p class="res"></p>`,
 memoria:x=>`<p>Encuentra las parejas.</p><div class="mem">${mez([...x.pares,...x.pares]).map(k=>`<button class="m" data-k="${esc(k)}" aria-label="Carta">${esc(k)}</button>`).join('')}</div><p class="res"></p>`,
 puzzle:()=>`<p>Toca las piezas en el orden correcto para formar la frase.</p><div class="orden"></div><div class="bandeja"></div><p class="res"></p>`,
@@ -510,6 +523,34 @@ r.querySelector('[data-cerrar-quiz]').addEventListener('click',()=>{modal.hidden
 modal.addEventListener('click',e=>{if(e.target===modal)modal.hidden=true});
 },
 
+ estrellas:(r,x)=>{
+  const buttons=[...r.querySelectorAll('.secret-star')];
+  const slots=[...r.querySelectorAll('.word-slot')];
+  const result=r.querySelector('.stars-result');
+  const count=r.querySelector('.stars-found');
+  const words=['Te','quiero','mucho','amor,','a','pesar','de','estar','lejos','quiero','seguir','a tu lado. ❤️'];
+  let found=0;
+  buttons.forEach((b,j)=>{
+    b.addEventListener('click',()=>{
+      if(b.disabled)return;
+      b.disabled=true;
+      if(b.dataset.star==='fake'){
+        b.textContent='✧';b.style.opacity='.3';
+        const note=document.createElement('p');
+        note.textContent=['Por aquí no era, traviesa 😂','Esta estrella solo quería saludar ✨','¡Buena estrella, pero no tiene palabras! 🤭','Sigue buscando, casi lo tienes ❤️'][j%4];
+        note.style.cssText='position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%);background:#f6efe0;color:#5e1426;padding:.5em .9em;border-radius:10px;max-width:80%;box-shadow:0 8px 20px #0008';
+        r.querySelector('.stars-game').append(note);setTimeout(()=>note.remove(),1600);return;
+      }
+      b.classList.add('found');b.textContent='★';
+      const i=Number(b.dataset.star);slots[i].textContent=words[i];found++;count.textContent=found;
+      if(found===12){
+        slots.forEach((slot,i)=>slot.textContent=words[i]);
+        result.classList.add('show');result.scrollIntoView({behavior:'smooth',block:'center'});
+        buttons.forEach(btn=>{if(btn.dataset.star!=='fake'&&!btn.disabled){btn.disabled=true;btn.textContent='★';btn.classList.add('found')}});
+      }
+    });
+  });
+},
 acertijo:(r,x)=>{const res=r.querySelector('.res');r.querySelector('.btn').onclick=()=>res.textContent=norm(r.querySelector('input').value)===norm(x.respuesta)?'¡Exacto! ✨':'Casi… inténtalo otra vez.';r.querySelector('[data-h]').onclick=()=>res.textContent='Pista: '+x.pista},
 reto:r=>r.querySelector('.btn').onclick=()=>r.querySelector('.res').textContent='Qué bonito, uno más para la colección 💕',
 memoria:(r,x)=>{let a=null,lock=false,n=0;const res=r.querySelector('.res');
